@@ -1,6 +1,5 @@
 import plivo
 
-
 auth_id = "Your AUTH_ID"
 auth_token = "Your Auth_TOKEN"
 
@@ -67,7 +66,7 @@ print str(response)
 
 # Sample output
 # (400, {
-#	u'api_id': u'6b07a5de-8f7f-11e4-b932-22000ac50fac', 
-#	u'error': u'1111111 is not a valid phone number'
-#	}
+#   u'api_id': u'6b07a5de-8f7f-11e4-b932-22000ac50fac', 
+#   u'error': u'1111111 is not a valid phone number'
+#   }
 # )
