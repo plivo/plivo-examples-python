@@ -27,8 +27,8 @@ conference_numbers = ["2222222222", "3333333333"]
 
 call_params = {
     'from': plivo_number, # The phone number to be used as the caller id
-    'answer_url': answer_url # The URL invoked by Plivo when the outbound call is answered
-    'answer_method' : "GET", # The method used to call the answer_url
+    'answer_url': answer_url, # The URL invoked by Plivo when the outbound call is answered
+    'answer_method' : "GET" # The method used to call the answer_url
     }
 
 for number in conference_numbers:
