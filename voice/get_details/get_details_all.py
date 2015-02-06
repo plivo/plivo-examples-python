@@ -5,7 +5,7 @@ auth_token = "Your AUTH_TOKEN"
 
 p = plivo.RestAPI(auth_id, auth_token)
 
-response = p.get_cdrs(params)
+response = p.get_cdrs()
 
 # Prints the complete response
 print str(response)	
