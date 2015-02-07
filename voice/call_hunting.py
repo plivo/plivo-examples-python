@@ -9,7 +9,7 @@ app=Flask(__name__)
 @app.route('/call_hunting/', methods=['GET','POST'])
 def call_hunting():
     r = plivoxml.Response()
-    d = r.addDial(**params)
+    d = r.addDial()
     d.addUser("sip:abcd1234@phone.plivo.com")
     d.addNumber("2222222222")
     d.addNumber("3333333333")
