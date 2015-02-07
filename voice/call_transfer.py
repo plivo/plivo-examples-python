@@ -23,7 +23,7 @@ def connect():
     r = plivoxml.Response()
     r.addSpeak(body)
     number = "1111111111"
-    d = r.addDial()
+    d = r.addDial(params)
     d.addNumber(number)
     print r.to_xml()
     return Response(str(response), mimetype='text/xml')
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 # Sample output for Dial XML
 # <Response>
 #    <Speak>Connecting your call..</Speak>
-#    <Dial>
+#    <Dial action="https://morning-ocean-4669.herokuapp.com/dial_status/" method="GET" redirect="true">
 #        <Number>1111111111</Number>
 #    </Dial>
 #</Response>
