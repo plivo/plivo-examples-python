@@ -3,20 +3,20 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route("/report/", methods=['GET','POST'])
+@app.route("/delivery_report/", methods=['GET','POST'])
 def report():
 
     # Sender's phone number
-    from_number = request.args.get('From')
+    from_number = request.values.get('From')
 
     # Receiver's phone number - Plivo number
-    to_number = request.args.get('To')
+    to_number = request.values.get('To')
 
     # Status of the message
-    status = request.args.get('Status')
+    status = request.values.get('Status')
 
     # Message UUID
-    uuid = request.args.get('MessageUUID')
+    uuid = request.values.get('MessageUUID')
 
     # Prints the status and messageuuid
     print "From : %s To : %s Status : %s MessageUUID : %s" % (from_number, to_number, status,uuid)

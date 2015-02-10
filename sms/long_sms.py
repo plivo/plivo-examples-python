@@ -40,7 +40,7 @@ uuid = str(response[1]['message_uuid'][0])
 print "Message_uuid : %s " % (uuid)
 
 # Output
-# Message_uuid : [u'2d97bbfe-9262-11e4-9bd8-22000afa12b9'] 
+# Message_uuid : 2d97bbfe-9262-11e4-9bd8-22000afa12b9
 
 # To get the SMS split units
 

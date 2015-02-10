@@ -4,17 +4,17 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route("/message/", methods=['GET','POST'])
+@app.route("/receive_sms/", methods=['GET','POST'])
 def receive_sms():
 
     # Sender's phone numer
-    from_number = request.args.get('From')
+    from_number = request.values.get('From')
 
     # Receiver's phone number - Plivo number
-    to_number = request.args.get('To')
+    to_number = request.values.get('To')
 
     # The text which was received
-    text = request.args.get('Text')
+    text = request.values.get('Text')
 
     # Print the message
     print 'Text received: %s - From: %s' % (text, from_number)
