@@ -14,7 +14,6 @@ def conference():
 	'record' : "true", # Option to record the call
 	'action' : "https://morning-ocean-4669.herokuapp.com/response/conf_action/", # URL to which the API can send back parameters
 	'method' : "GET", # method to invoke the action Url
-	'record' : "true", # Option to record the call 
 	'callbackUrl' : "https://morning-ocean-4669.herokuapp.com/response/conf_callback/", # If specified, information is sent back to this URL
 	'callbackMethod' : "GET" # Method used to notify callbackUrl
 	# For moderated conference
