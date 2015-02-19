@@ -1,6 +1,6 @@
 import plivo, plivoxml
 
-h_id = "Your AUTH_ID"
+auth_id = "Your AUTH_ID"
 auth_token = "Your AUTH_Token"
 
 p = plivo.RestAPI(auth_id, auth_token)
