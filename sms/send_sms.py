@@ -1,59 +1,35 @@
-# -*- coding: utf-8 -*-
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your Auth_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
-
-params = {
-    'src': '1111111111', # Sender's phone number with country code
-    'dst' : '2222222222', # Receiver's phone Number with country code
-    'text' : u"Hello, how are you?", # Your SMS Text Message - English
-#   'text' : u"こんにちは、元気ですか？" # Your SMS Text Message - Japanese
-#   'text' : u"Ce est texte généré aléatoirement" # Your SMS Text Message - French
-    'url' : "http://morning-ocean-4669.herokuapp.com/report/", # The URL to which with the status of the message is sent
-    'method' : 'GET' # The method used to call the url
-}
-
-response = p.send_message(params)
-
+client = plivo.RestClient("YOUR_AUTH_ID", "YOUR_AUTH_TOKEN")
+response = client.messages.create(
+    src="14152224444",  # Sender's phone number with country code
+    dst=" 14152223333",  # Sender's phone number with country code
+    text="Hello, this is a sample text",  # Your SMS Text Message - English
+    #   'text' : u"こんにちは、元気ですか？" # Your SMS Text Message - Japanese
+    #   'text' : u"Ce est texte généré aléatoirement" # Your SMS Text Message - French
+    url="http://foo.com/sms_status/", # URL for callback
+    method="GET",  # The method used to call the url
+)
 # Prints the complete response
-print str(response)
-
-# Sample successful output
-# (202,
-#       {
-#               u'message': u'message(s) queued',
-#               u'message_uuid': [u'b795906a-8a79-11e4-9bd8-22000afa12b9'],
-#               u'api_id': u'b77af520-8a79-11e4-b153-22000abcaa64'
-#       }
-# )
-
-# Prints only the status code
-print response[0]
-
-# Sample successful output
-# 202
-
-# Prints the rmessage details
-print response[1]
+print(response)
 
 # Sample successful output
 # {
-#       u'message': u'message(s) queued',
-#       u'message_uuid': [u'b795906a-8a79-11e4-9bd8-22000afa12b9'],
-#       u'api_id': u'b77af520-8a79-11e4-b153-22000abcaa64'
+#    "message":"message(s) queued",
+#    "message_uuid":[
+#       "db3ce55a-7f1d-11e1-8ea7-1231380bc196"
+#    ],
+#    "api_id":"db342550-7f1d-11e1-8ea7-1231380bc196"
 # }
 
 # Print the message message_uuid
-print response[1]['message_uuid']
+print (response.message_uuid)
 
 # Sample successful output
-# [u'b795906a-8a79-11e4-9bd8-22000afa12b9']
+# db3ce55a-7f1d-11e1-8ea7-1231380bc196
 
 # Print the api_id
-print response[1]['api_id']
+print(response.api_id)
 
 # Sample successful output
-# b77af520-8a79-11e4-b153-22000abcaa64
+# db342550-7f1d-11e1-8ea7-1231380bc196

@@ -1,5 +1,5 @@
-from flask import Flask, Response
-import plivo, plivoxml
+from flask import Flask, Response, request
+from plivo import plivoxml
 
 app = Flask(__name__)
 
@@ -10,17 +10,17 @@ def greet_caller():
         "1111111111": "ABCDEF",
         "2222222222": "VWXYZ",
         "3333333333": "QWERTY",
-    }
-
-    response = plivoxml.Response()
+        }
+        
     if from_number in callers:
-        body = "Hello," + callers[from_number]
+        body = "Hello,"+callers[from_number]
     else:
         body = "Hello Stranger!"
 
-    response.addSpeak(body)
-    print response.to_xml()
-    return Response(str(response), mimetype='text/xml')
+    response = (plivoxml.ResponseElement()
+        .add(plivoxml.SpeakElement(body)))
+    return Response(response.to_string(), mimetype="application/xml")
+    
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

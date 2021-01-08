@@ -1,107 +1,108 @@
-import plivo, plivoxml
+import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
+client = plivo.RestClient("YOUR_AUTH_ID", "YOUR_AUTH_TOKEN")
 
-p = plivo.RestAPI(auth_id, auth_token)
+response = client.calls.list(
+    limit=5,
+    offset=0,
+)
+print(response)
 
-response = p.get_cdrs()
-
-# Prints the complete response
-print str(response)	
-
-# Sample successful output
-# (200, {
-#	u'meta': {
-#		u'previous': None, 
-#		u'total_count': 37, 
-#		u'offset': 0, 
-#		u'limit': 20, 
-#		u'next': u'/v1/Account/XXXXXXXXXXXXXXX/Call/?limit=20&offset=20'
-#	}, 
-#	u'objects': [
-#		{
-#			u'bill_duration': 0, 
-#			u'billed_duration': 0, 
-#			u'total_amount': u'0.00000', 
-#			u'parent_call_uuid': None, 
-#			u'call_direction': u'inbound', 
-#			u'call_duration': 0, 
-#			u'to_number': u'2222222222', 
-#			u'total_rate': u'0.00850', 
-#			u'from_number': u'1111111111', 
-#			u'end_time': u'2014-12-30 21:56:33+04:00', 
-#			u'call_uuid': u'30350d24-904d-11e4-aa47-f91d0b204d04', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXX/Call/30350d24-904d-11e4-aa47-f91d0b204d04/'
-#		}, 
-#		{
-#			u'bill_duration': 0, 
-#			u'billed_duration': 0, 
-#			u'total_amount': u'0.00000', 
-#			u'parent_call_uuid': None, 
-#			u'call_direction': u'inbound', 
-#			u'call_duration': 0, 
-#			u'to_number': u'2222222222', 
-#			u'total_rate': u'0.00850', 
-#			u'from_number': u'1111111111', 
-#			u'end_time': u'2014-12-30 21:54:09+04:00', 
-#			u'call_uuid': u'da84966a-904c-11e4-bdae-b559cbfe39b9', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXX/Call/da84966a-904c-11e4-bdae-b559cbfe39b9/'
-#		}
-#	]
-#)	
+# {
+#    "api_id":"8299d094-dc72-11e5-b56c-22000ae90795",
+#    "meta":{
+#       "limit":20,
+#       "next":null,
+#       "offset":0,
+#       "previous":null,
+#       "total_count":4
+#    },
+#    "objects":[
+#       {
+#          "answer_time":"2015-07-26 15:45:02+05:30",
+#          "api_id":"06ae0f8f-dc72-11e5-b56c-22000ae90795",
+#          "bill_duration":924,
+#          "billed_duration":960,
+#          "call_direction":"outbound",
+#          "call_duration":924,
+#          "call_uuid":"eba53b9e-8fbd-45c1-9444-696d2172fbc8",
+#          "end_time":"2015-07-26 15:45:14+05:30",
+#          "from_number":"+14158572518",
+#          "initiation_time":"2015-07-26 15:44:49+05:30",
+#          "parent_call_uuid":null,
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Call/eba53b9e-8fbd-45c1-9444-696d2172fbc8/",
+#          "to_number":"14153268174",
+#          "total_amount":"0.13600",
+#          "total_rate":"0.00850"
+#       },
+#       {
+#          "answer_time":"2015-07-26 16:45:02+05:30",
+#          "api_id":"06ae0f8f-dc72-11e5-b56c-22000ae90795",
+#          "bill_duration":924,
+#          "billed_duration":960,
+#          "call_direction":"outbound",
+#          "call_duration":924,
+#          "call_uuid":"eba53b9e-8fbd-45c1-9444-696d2172fbc8",
+#          "end_time":"2015-07-26 16:45:14+05:30",
+#          "from_number":"+14158572518",
+#          "initiation_time":"2015-07-26 16:44:49+05:30",
+#          "parent_call_uuid":null,
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Call/eba53b9e-8fbd-45c1-9444-696d2172fbc8/",
+#          "to_number":"14153268174",
+#          "total_amount":"0.13600",
+#          "total_rate":"0.00850"
+#       }
+#    ]
+# }
 
 # Filtering the records
 
-params = {
-    'end_time__gt' : "2014-12-23 11:47", # Filter out calls according to the time of completion. gte stands for greater than or equal.
-    'call_direction' : "inbound", # Filter the results by call direction. The valid inputs are inbound and outbound
-    'from_number' : "1111111111", # Filter the results by the number from where the call originated
-    'to_number' : "2222222222", # Filter the results by the number to which the call was made
-	'limit' : '10', # The number of results per page
-	'offset' : '0' # The number of value items by which the results should be offset
-}
-
-response = p.get_cdrs(params)
-print str(response)	
+response = client.calls.list(
+    limit=5, # The number of results per page
+    offset=0, # The number of value items by which the results should be offset
+    from_number="1111111111", # Filter the results by the number from where the call originated
+    to_number="2222222222", # Filter the results by the number to which the call was made
+    call_direction="inbound", # Filter the results by call direction. The valid inputs are inbound and outbound
+)
+print(response)
 
 # Sample successful output
-# (200, {
-#	u'meta': {
-#		u'previous': None, 
-#		u'total_count': 2, 
-#		u'offset': 0, 
-#		u'limit': 10, 
-#		u'next': None
-#	}, 
-#	u'objects': [
-#		{
-#			u'bill_duration': 18, 
-#			u'billed_duration': 60, 
-#			u'total_amount': u'0.00850', 
-#			u'parent_call_uuid': None, 
-#			u'call_direction': u'inbound', 
-#			u'call_duration': 18, 
-#			u'to_number': u'2222222222', 
-#			u'total_rate': u'0.00850', 
-#			u'from_number': u'1111111111', 
-#			u'end_time': u'2014-12-30 16:00:50+04:00', 
-#			u'call_uuid': u'74430d86-901b-11e4-9a96-71f618784e1e', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXX/Call/74430d86-901b-11e4-9a96-71f618784e1e/'
-#		}, 
-#		{
-#			u'bill_duration': 13, 
-#			u'billed_duration': 60, 
-#			u'total_amount': u'0.00850', 
-#			u'parent_call_uuid': None, 
-#			u'call_direction': u'inbound', 
-#			u'call_duration': 13, 
-#			u'to_number': u'2222222222', 
-#			u'total_rate': u'0.00850', 
-#			u'from_number': u'1111111111', 
-#			u'end_time': u'2014-12-30 15:59:16+04:00', 
-#			u'call_uuid': u'3f2192a8-901b-11e4-93ac-c374cdd23d80', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXX/Call/3f2192a8-901b-11e4-93ac-c374cdd23d80/'
-#		}
-#	]
-# )
+# {
+#    "meta":{
+#       "previous":"None",
+#       "total_count":2,
+#       "offset":0,
+#       "limit":10,
+#       "next":"None"
+#    },
+#    "objects":[
+#       {
+#          "bill_duration":18,
+#          "billed_duration":60,
+#          "total_amount":0.00850,
+#          "parent_call_uuid":"None",
+#          "call_direction":"inbound",
+#          "call_duration":18,
+#          "to_number":2222222222,
+#          "total_rate":0.00850,
+#          "from_number":1111111111,
+#          "end_time":"2014-12-30 16":"00":"50+04":00,
+#          "call_uuid":74430d86-901b-11e4-9a96-71f618784e1e,
+#          "resource_uri":/v1/Account/XXXXXXXXXXXXXXX/Call/74430d86-901b-11e4-9a96-71f618784e1e/
+#       },
+#       {
+#          "bill_duration":13,
+#          "billed_duration":60,
+#          "total_amount":0.00850,
+#          "parent_call_uuid":"None",
+#          "call_direction":"inbound",
+#          "call_duration":13,
+#          "to_number":2222222222,
+#          "total_rate":0.00850,
+#          "from_number":1111111111,
+#          "end_time":"2014-12-30 15":"59":"16+04":00,
+#          "call_uuid":3f2192a8-901b-11e4-93ac-c374cdd23d80,
+#          "resource_uri":/v1/Account/XXXXXXXXXXXXXXX/Call/3f2192a8-901b-11e4-93ac-c374cdd23d80/
+#       }
+#    ]
+# }

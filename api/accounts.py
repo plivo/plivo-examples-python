@@ -1,174 +1,149 @@
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
 # Get account details
-response = p.get_account()
-print str(response)
+response = client.account.get()
+print(response)
 
 # Sample successful output
-# (200,
-#       {
-#               u'city': u'Testing City',
-#               u'account_type': u'standard',
-#               u'name': u'Abctest',
-#               u'cash_credits': u'89.38274',
-#               u'state': u'',
-#               u'api_id': u'0760deee-8a6e-11e4-a2d1-22000ac5040c',
-#               u'billing_mode': u'prepaid',
-#               u'auto_recharge': False,
-#               u'address': u'Sample address',
-#               u'timezone': u'US/Texas',
-#               u'auth_id': u'xxxxxxxxxxxxxxxx',
-#               u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxx/'
-#       }
-# )
+# {
+#    "account_type":"standard",
+#    "address":"Wayne Enterprises Inc.",
+#    "api_id":"150892a0-922a-11e7-b6f4-061564b78b75",
+#    "auth_id":"MAXXXXXXXXXXXXXXXXXX",
+#    "auto_recharge":false,
+#    "billing_mode":"prepaid",
+#    "cash_credits":"1.80900",
+#    "city":"Gotham",
+#    "name":"Bruce Wayne",
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/",
+#    "state":"NY",
+#    "timezone":"America/New_York"
+# }
 
 # Modify account
-params = {
-        'name'  : 'Test' # Name of the account holder or business.
-        'city'  : 'Testing City', # City of the account holder
-        'address' : 'Sample address', # Address of the account holder
-        'timezone' : 'Indian/Mauritius' # Time zone of the account holder
-}
+response = client.account.update(
+    name="Lucius Fox",  # Name of the account holder or business.
+    city="New York",  # City of the account holder
+    address="Times Square",  # Address of the account holder
+)
+print(response)
 
-response = p.modify_account(params)
-print str(response)
 
 # Sample successful output
-# (202,
-#       {
-#               u'message': u'changed',
-#               u'api_id': u'a1ce9df4-8a6e-11e4-96e3-22000abcb9af'
-#       }
-# )
+# {
+#   "api_id": "02bbdbaa-9303-11e7-8bc8-065f6a74a84a",
+#   "message": "changed"
+# }
 
 # Create a sub account
-params = {
-        'name' : 'test_subaccount1', # Name of the subaccount
-        'enabled' : 'True' # Specify if the subaccount should be enabled or not
-}
-
-response = p.create_subaccount(params)
-print str(response)
+response = client.subaccounts.create(
+    name="Wayne Enterprises Subaccount",  # Name of the subaccount
+    enabled=True,  # Specify if the subaccount should be enabled or not
+)
+print(response)
 
 # Sample successful output
-# (201,
-#       {
-#               u'auth_token': u'YjFhM2EzNWExM2M4NmU3MzNmZGRiMjFiM2M3N2Qz',
-#               u'message': u'created',
-#               u'auth_id': u'SAM2U3ZDEXOTK0NTMWMJ',
-#               u'api_id': u'e549d6b6-8a6e-11e4-96e3-22000abcb9af'
-#       }
-# )
+# {
+# 	"api_id": "324a7dd8-0db2-11e4-8a4a-123140008edf",
+# 	"auth_id": "SAXXXXXXXXXXXXXXXXXX",
+# 	"auth_token": "MTZjYWM0YzVjNjMwZmVmODFiNWJjNPJmOGJjZjgw",
+# 	"message": "created"
+# }
 
 # Modify a sub account
-params = {
-        'subauth_id' : 'ZZZZZZZZZZZZ', # Auth ID of the sub acccount that has to be modified
-        'name' : 'ABC_test' # Name of the subaccount
-}
-
-response = p.modify_subaccount(params)
-print str(response)
+response = client.subaccounts.update(
+    auth_id="SAXXXXXXXXXXXXXXXXXX",
+    name="Updated Subaccount Name",
+)
+print(response)
 
 # Sample successful output
-# (202, {
-#       u'message': u'changed',
-#       u'api_id': u'94a402fc-8a70-11e4-b423-22000ac8a2f8'
-#       }
-# )
+# {
+#   "message": "changed",
+#   "api_id": "5a9fcb68-523d-11e1-86da-6ff39efcb949"
+# }
 
 # Get details of all sub accounts
-params = {
-        'limit' : '5', # The number of results per page
-        'offset' : '1' # The number of value items by which the results should be offset
-}
-response = p.get_subaccounts()
-print str(response)
+response = client.subaccounts.list(
+    offset=0, # The number of value items by which the results should be offset
+    limit=5, # The number of results per page
+)
+print(response)
 
 # Sample successful output
-#(200, {
-#       u'meta': {
-#               u'previous': None,
-#               u'total_count': 3,
-#               u'offset': 0,
-#               u'limit': 20,
-#               u'next': None
+# {
+#    "api_id":"b38bf42e-0db4-11e4-8a4a-123140008edf",
+#    "meta":{
+#       "limit":20,
+#       "next":null,
+#       "offset":0,
+#       "previous":null,
+#       "total_count":2
+#    },
+#    "objects":[
+#       {
+#          "account":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/",
+#          "auth_id":"SAXXXXXXXXXXXXXXXXXX",
+#          "auth_token":"MTZjYWM0YzVjNjMwZmVmODFiNWJjNWJmOGJjZjgw",
+#          "created":"2014-07-17",
+#          "enabled":false,
+#          "modified":null,
+#          "name":"Chewbacca",
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Subaccount/SAXXXXXXXXXXXXXXXXXX/"
 #       },
-#       u'objects': [
-#               {
-#                       u'account': u'/v1/Account/XXXXXXXXXXXXXXXXX/',
-#                       u'name': u'test_subaccount1',
-#                       u'created': u'2014-12-23',
-#                       u'auth_token': u'YYYYYYYYYYYYY',
-#                       u'enabled': False,
-#                       u'modified': None,
-#                       u'new_auth_token': u'YYYYYYYYYYYYY',
-#                       u'auth_id': u'ZZZZZZZZZZZZ',
-#                       u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXXXX/Subaccount/ZZZZZZZZZZZZ/'
-#               },
-#               {
-#                       u'account': u'/v1/Account/XXXXXXXXXXXXXXXXX/',
-#                       u'name': u'test_subaccount2',
-#                       u'created': u'2014-12-19',
-#                       u'auth_token': u'YYYYYYYYYYYYY',
-#                       u'enabled': False,
-#                       u'modified': None,
-#                       u'new_auth_token': u'YYYYYYYYYYYYY',
-#                       u'auth_id': u'ZZZZZZZZZZZZ',
-#                       u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXXXX/Subaccount/ZZZZZZZZZZZZ/'
-#               }
-#       ],
-#       u'api_id': u'324f3028-8a6f-11e4-a2d1-22000ac5040c'
+#       {
+#          "account":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/",
+#          "auth_id":"SAXXXXXXXXXXXXXXXXXX",
+#          "auth_token":"OTdhMjYwMWYxOGMyNpFjNzUwYWM3YWI3NjY4Y2Ey",
+#          "created":"2012-09-23",
+#          "enabled":true,
+#          "modified":"2012-09-23",
+#          "name":"new",
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Subaccount/SAXXXXXXXXXXXXXXXXXX/"
 #       }
-# )
+#    ]
+# }
 
 # Print the total number of apps
-print response[1]['meta']['total_count']
+print (response['meta']['total_count'])
 
 # Sample successful output
-# 3
+# 2
 
 # Get details of a particular sub acount
-params = {
-        'subauth_id' : 'ZZZZZZZZZZZZ' # Auth ID of the sub acccount for which the details hae to be retrieved
-}
 
-response = p.get_subaccount(params)
-print str(response)
+response = client.subaccounts.get(
+    auth_id='SAXXXXXXXXXXXXXXXXXX', # Auth ID of the sub acccount for which the details hae to be retrieved
+    )
+print(response)
 
 # Sample successful output
-# (200, {
-#               u'account': u'/v1/Account/XXXXXXXXXXXXXXXXX/',
-#               u'name': u'test_subaccount1',
-#               u'created': u'2014-12-23',
-#               u'auth_token': u'YYYYYYYYYYYYY',
-#               u'enabled': False,
-#               u'modified': None,
-#               u'api_id': u'31b185ca-8a70-11e4-b932-22000ac50fac',
-#               u'new_auth_token': u'YYYYYYYYYYYYY',
-#               u'auth_id': u'ZZZZZZZZZZZZ',
-#               u'resource_uri': u'/v1/Account/XXXXXXXXXXXXXXXXX/Subaccount/ZZZZZZZZZZZZ/'
-#       }
-# )
+# {
+#    "account":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/",
+#    "api_id":"323972b2-0db3-11e4-a2d1-22000ac5040c",
+#    "auth_id":"SAXXXXXXXXXXXXXXXXXX",
+#    "auth_token":"MTZjYWM0YzVjNjMwZmVmODFiNWJjNWJmOGJjZjgw",
+#    "created":"2014-07-17",
+#    "enabled":false,
+#    "modified":null,
+#    "name":"Han Solo",
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Subaccount/SAXXXXXXXXXXXXXXXXXX/"
+# }
 
 # Delete a sub account
-params = {
-        'subauth_id' : 'ZZZZZZZZZZZZ' # Auth ID of the sub acccount that has to be deleted
-}
-
-response = p.delete_subaccount(params)
-print str(response)
+response = client.subaccounts.delete(
+    auth_id="SAXXXXXXXXXXXXXXXXXX",  # Auth ID of the sub acccount that has to be deleted
+    cascade=True,  # If cascade is set to true, the Applications, Endpoints, and Numbers associated with the Subaccount are also deleted
+)
+print(response)
 
 # Sample successful output
 # (204, '')
 
 # Sample unsuccessful output
-# (404, {
-#       u'api_id': u'28eb91a2-8f65-11e4-a2d1-22000ac5040c', 
-#       u'error': u'not found'
-#       }
-# )
+# {
+#    'api_id': '28eb91a2-8f65-11e4-a2d1-22000ac5040c', 
+#    'error': 'not found'
+# }

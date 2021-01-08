@@ -1,44 +1,59 @@
 from flask import Flask, url_for, Response, request
-
-app = Flask(__name__)
-
-import plivoxml as plivo
+from plivo import plivoxml
+import plivo
 import random
 import os
 
+app = Flask(__name__)
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    response = plivo.Response()
-    response.addSpeak(body="Hello, welcome to Plivo's "
-                      "guessing game app!")
-    response.addWait(length=2)
+    response = plivoxml.ResponseElement()
+    response.add(
+        plivoxml.GetDigitsElement(
+            action="/main_menu_response",
+            method="POST",
+            timeout="4",
+            num_digits="4",
+            retries="1",
+        )
+    )
+    response.add(plivoxml.SpeakElement("Hello, welcome to Plivo guessing game app!"))
+    response.add(plivoxml.SpeakElement("To play the game Press 1"))
+    response.add(plivoxml.SpeakElement("To learn how to play Press 2"))
+    response.add(plivoxml.SpeakElement("You can end this call at any time."))
 
-    absolute_action_url = url_for('mm_response', _external=True)
-    getDigits = plivo.GetDigits(action=absolute_action_url, method='POST',
-                                timeout=4, numDigits=4, retries=1)
-    getDigits.addSpeak(body='To play the game Press 1')
-    getDigits.addWait(length=1)
-    getDigits.addSpeak(body='To learn how to play Press 2')
-    getDigits.addWait(length=1)
-    getDigits.addSpeak(body='You can end this call at any time.')
+    return Response(response.to_string(), mimetype='application/xml')
 
-    response.add(getDigits)
-
-    return Response(str(response), mimetype='text/xml')
-
+# Output
+# <Response>
+#   <GetDigits action="/main_menu_response" method="POST" timeout="4" numDigits="4" retries="1"/>
+#   <Speak>Hello, welcome to Plivo guessing game app!</Speak>
+#   <Speak>To play the game Press 1</Speak>
+#   <Speak>To learn how to play Press 2</Speak>
+#   <Speak>You can end this call at any time.</Speak>
+# </Response>
 
 def exit_sequence(msg="Oops! There was an error!"):
-    response = plivo.Response()
-    response.addSpeak("We did not receive a valid response. We will hangup now.")
-    response.addHangup()
-    return Response(str(response), mimetype='text/xml')
+    response = plivoxml.ResponseElement()
+    response.add(plivoxml.HangupElement(schedule=10, reason='rejected'))
+    response.add(
+    plivoxml.SpeakElement('We did not receive a valid response. We will hangup now.'))
+
+    return Response(response.to_string(), mimetype='application/xml')
+
+# Output
+# <Response>
+#   <Hangup reason="rejected" schedule="10"/>
+#   <Speak>We did not receive a valid response. We will hangup now.</Speak>
+# </Response>
 
 
 @app.route('/main_menu_response', methods=['POST',])
 def mm_response():
     post_args = request.form
-    print post_args
-    print request.data
+    print (post_args)
+    print (request.data)
     response = plivo.Response()
     input_digit = post_args.get('Digits', None)
     if input_digit != "1" and input_digit != "2":
@@ -46,12 +61,12 @@ def mm_response():
     else:
         if input_digit == "1":
             absolute_action_url = url_for('play_game', _external=True)
-            response.addRedirect(body=absolute_action_url, method='POST')
-            return Response(str(response), mimetype='text/xml')
+            response.add(plivoxml.RedirectElement(absolute_action_url,method='POST'))
+            return Response(response.to_string(), mimetype='application/xml')
         else:
             absolute_action_url = url_for('how_to_play', _external=True)
-            response.addRedirect(body=absolute_action_url, method='POST')
-            return Response(str(response), mimetype='text/xml')
+            response.add(plivoxml.RedirectElement(absolute_action_url,method='POST'))
+            return Response(response.to_string(), mimetype='application/xml')
 
 
 @app.route('/play_game', methods=['POST',])
@@ -60,18 +75,24 @@ def play_game():
         secret = random.randint(1, 100)
         guesses = 10
 
-        response = plivo.Response()
+        response = plivoxml.ResponseElement()
         absolute_action_url = url_for('play_game', _external=True,
                                       **{'secret': str(secret),
                                          'guesses': str(guesses)})
-        getDigits = plivo.GetDigits(action=absolute_action_url, method='POST',
-                                    timeout=10, numDigits=4, retries=1)
-        getDigits.addSpeak(body="I have thought of a secret number between "
-                           "one and one hundred. "
-                           "You have ten guesses to find it!")
-        getDigits.addSpeak(body="You can make your guess now.")
-        response.add(getDigits)
-        return Response(str(response), mimetype='text/xml')
+        
+        response.add(
+            plivoxml.GetDigitsElement(
+                action=absolute_action_url,
+                method="POST",
+                timeout="10",
+                num_digits="4",
+                retries="1",)
+        .add(
+            plivoxml.SpeakElement(
+                "I have thought of a secret number between one and one hundred. You have ten guesses to find it!")
+                ).add(plivoxml.SpeakElement("You can make your guess now."))
+                )
+        return Response(response.to_string(), mimetype='application/xml')
     else:
         secret = int(request.args.get('secret', '0'))
         guesses = int(request.args.get('guesses', '0')) - 1
@@ -80,58 +101,52 @@ def play_game():
                                          'guesses': str(guesses)})
 
         input_num = request.form.get('Digits', "0")
-        response = plivo.Response()
+        response = plivoxml.ResponseElement()
         try:
             input_num = int(input_num)
-        except ValueError, e:
-            print e
+        except ValueError as e:
+            print (e)
             return exit_sequence()
 
         if input_num == secret:
-            response.addSpeak("Congratulations! %d is the right number!"
+            response.add(plivoxml.SpeakElement("Congratulations! {} is the right number!"
                               " You have guessed"
-                              " it in %d guesses - your score is %d." %
-                              (secret, 10 - guesses, guesses + 1))
-            response.addWait(length=2)
-            response.addHangup()
-            return Response(str(response), mimetype='text/xml')
+                              " it in {} guesses - your score is {}.".format(secret, 10 - guesses, guesses + 1)))
+            response.add(plivoxml.WaitElement(None).set_length(2))
+            response.add(plivoxml.HangupElement())
+            return Response(response.to_string(), mimetype='application/xml')
         else:
             if input_num > secret:
                 answer = "Sorry, you guessed %d. The secret is lesser."
             else:
                 answer = "Sorry, you guessed %d. The secret is greater."
-            response.addSpeak(answer % (input_num))
+            response.add(plivoxml.SpeakElement(answer+input_num))
             if guesses > 0:
-                getDigits = plivo.GetDigits(action=absolute_action_url,
-                                            method='POST',
-                                            timeout=10, numDigits=4,
-                                            retries=1)
-                getDigits.addWait(length=1)
-                getDigits.addSpeak("You have %d guesses remaining! Guess again!" % guesses)
-                response.add(getDigits)
+                response.add(
+                    plivoxml.GetDigitsElement(action=absolute_action_url, method='POST',timeout='10',num_digits='4',retries='1').add(
+                        plivoxml.SpeakElement("You have {} guesses remaining! Guess again!".format(guesses))))
             else:
-                response.addWait(length=1)
-                response.addSpeak("Sorry, you don't have any remaining guesses. The secret was %d." % (secret))
-                response.addHangup()
-            return Response(str(response), mimetype='text/xml')
+                response.add(plivoxml.WaitElement (None).set_length (1))
+                response.add(plivoxml.SpeakElement('Sorry, you dont have any remaining guesses. The secret was {}' .format(secret)))
+                response.add(plivoxml.HangupElement())
+            return Response(response.to_string(), mimetype='application/xml')
 
 
-@app.route('/how_to_play', methods=['POST',])
+@app.route('/how_to_play', methods=['POST'])
 def how_to_play():
-    response = plivo.Response()
-    response.addSpeak(body="I will think of a secret number that you will have to guess.")
-    response.addSpeak(body="The number will be between one and one hundred.")
-    response.addSpeak(body="To make your guess, just dial the digits and end with the hash sign.")
-    response.addSpeak(body="For each wrong guess, I will tell you if you guessed lesser of greater.")
-    response.addSpeak(body="You will have a maximum of ten chances to guess the number.")
-
-    response.addWait(length=1)
-    response.addSpeak(body="You will now be transferred to the main menu.")
+    response = plivoxml.ResponseElement()
+    response.add(plivoxml.SpeakElement('I will think of a secret number that you will have to guess.'))
+    response.add(plivoxml.SpeakElement('The number will be between one and one hundred.'))
+    response.add(plivoxml.SpeakElement('To make your guess, just dial the digits and end with the hash sign.'))
+    response.add(plivoxml.SpeakElement('For each wrong guess, I will tell you if you guessed lesser of greater.'))
+    response.add(plivoxml.SpeakElement('You will have a maximum of ten chances to guess the number.'))
+    response.add(plivoxml.WaitElement(None).set_length(6))
+    response.add(plivoxml.SpeakElement('You will now be transferred to the main menu.'))
 
     abs_red_url = url_for('index', _external=True)
-    response.addRedirect(body=abs_red_url, method='POST')
+    response.add(plivoxml.RedirectElement(abs_red_url))
 
-    return Response(str(response), mimetype='text/xml')
+    return Response(response.to_string(), mimetype='application/xml')
 
 
 if __name__ == "__main__":

@@ -1,136 +1,119 @@
-import plivo,plivoxml
+import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
 # Create an Endpoint
-params = {
-    'username': 'testuser', # The username for the endpoint to be created
-    'password': 'test123', # The password for your endpoint username
-    'alias': 'Test' # Alias for this endpoint
-}
-
-response = p.create_endpoint(params)
-print str(response)
+response = client.endpoints.create(
+    username="testusername",  # The username for the endpoint to be created
+    password="testpassword",  # The password for your endpoint username
+    alias="Test Account",  # Alias for this endpoint
+)
+print(response)
 
 # Samplesuccessful output
-# (201, {
-#       u'username': u'testuser141223061753',
-#       u'alias': u'Test',
-#       u'message': u'created',
-#       u'endpoint_id': u'14608873252694',
-#       u'api_id': u'6de230bc-8a6b-11e4-ac1f-22000ac51de6'
-#       }
-# )
+# {
+#    "username":"zumba131031145958",
+#    "alias":"zumba",
+#    "message":"created",
+#    "endpoint_id":"37371860103666",
+#    "api_id":"1c13de4c-423d-11e3-9899-22000abfa5d5"
+# }
 
 
 # Get details of all existing endpoints
-params = {
-        'limit': '10', # The number of results per page
-        'offset': '0' # The number of value items by which the results should be offset
-}
-
-response = p.get_endpoints(params)
-print str(response)
+response = client.endpoints.list(
+    limit=5,  # The number of results per page
+    offset=0,  # The number of value items by which the results should be offset
+)
+print(response)
 
 # Sample successful output
-# (200, {
-#       u'meta': {
-#               u'previous': None,
-#               u'total_count': 7,
-#               u'offset': 0,
-#               u'limit': 10,
-#               u'next': None
+# {
+#    "api_id":"30a0c8c2-110c-11e4-bd8a-12313f016a39",
+#    "meta":{
+#       "limit":20,
+#       "next":null,
+#       "offset":0,
+#       "previous":null,
+#       "total_count":11
+#    },
+#    "objects":[
+#       {
+#          "alias":"callme",
+#          "application":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/33406267401237901/",
+#          "endpoint_id":"32866729519064",
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Endpoint/32866729519064/",
+#          "sip_contact":"sip:callme140703093224@122.172.71.207:57563;ob",
+#          "sip_expires":"2014-07-21 19:26:08",
+#          "sip_registered":"true",
+#          "sip_uri":"sip:callme140703093944@phone.plivo.com",
+#          "sip_user_agent":"Telephone 1.1.4",
+#          "sub_account":null,
+#          "username":"callme140703093944"
 #       },
-#       u'objects': [
-#               {
-#                       u'username': u'testuser141223061753',
-#                       u'application': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/16632742496743552/',
-#                       u'sip_registered': u'false',
-#                       u'sip_uri': u'sip:testuser141223061753@phone.plivo.com',
-#                       u'alias': u'Test',
-#                       u'endpoint_id': u'14608873252694',
-#                       u'password': u'cc03e747a6afbbcbf8be7668acfebee5',
-#                       u'sub_account': None,
-#                       u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Endpoint/14608873252694/'
-#               },
-#               {
-#                       u'username': u'testuser141218101424',
-#                       u'application': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/16632742496743552/',
-#                       u'sip_registered': u'false',
-#                       u'sip_uri': u'sip:testuser141218101424@phone.plivo.com',
-#                       u'alias': u'Test',
-#                       u'endpoint_id': u'21784177241578',
-#                       u'password': u'cc03e747a6afbbcbf8be7668acfebee5',
-#                       u'sub_account': None,
-#                       u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Endpoint/21784177241578/'
-#               }
-#       ]
-# )
+#       {
+#          "alias":"polycom",
+#          "application":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/37961981447734951/",
+#          "endpoint_id":"17551316589618",
+#          "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Endpoint/17551316589618/",
+#          "sip_registered":"false",
+#          "sip_uri":"sip:polycom140506175228@phone.plivo.com",
+#          "sub_account":null,
+#          "username":"polycom140506175448"
+#       }
+#    ]
+# }
 
 # Print the total number of apps
-print response[1]['meta']['total_count']
+print (response['meta']['total_count'])
 
 # Sample successful output
-# 7
+# 11
 
 # Get details of a single endpoint
-params = {
-        'endpoint_id': '21784177241578' # ID of the endpoint for which the details have to be retrieved
-}
-
-response = p.get_endpoint(params)
-print str(response)
+response = client.endpoints.get(
+    endpoint_id="39452475478853",  # ID of the endpoint for which the details have to be retrieved
+)
+print(response)
 
 # Sample successful output
-# (200,
-#       {
-#               u'username': u'testuser141218101424',
-#               u'application': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/16632742496743552/',
-#               u'sip_registered': u'false',
-#               u'api_id': u'f419d274-8a6c-11e4-b153-22000abcaa64',
-#               u'sip_uri': u'sip:testuser141218101424@phone.plivo.com',
-#               u'alias': u'Test',
-#               u'endpoint_id': u'21784177241578',
-#               u'password': u'cc03e747a6afbbcbf8be7668acfebee5',
-#               u'sub_account': None,
-#               u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Endpoint/21784177241578/'
-#       }
-# )
+# {
+#    "alias":"zumba",
+#    "api_id":"39015de8-4fb3-11e4-a2d1-22000ac5040c",
+#    "application":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/379619814477342321/",
+#    "endpoint_id":"39452475478853",
+#    "password":"8bc0002a467b8276aaaf47e92bc46b9f",
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Endpoint/39452475478853/",
+#    "sip_registered":"false",
+#    "sip_uri":"sip:zumba141009125224@phone.plivo.com",
+#    "sub_account":null,
+#    "username":"zumba141009125224"
+# }
 
 # Modify an endpoint
-params = {
-        'endpoint_id' : '21784177241578', # ID of the endpoint that has to be modified
-        'alias' : 'New_test' # Values that have to be updated
-}
-
-response = p.modify_endpoint(params)
-print str(response)
+response = client.endpoints.update(
+    endpoint_id="21784177241578", # ID of the endpoint that has to be modified
+    alias="Double time.", # Values that have to be updated
+)
+print(response)
 
 # Sample successful output
-# (202,
-#       {
-#               u'message': u'changed',
-#               u'api_id': u'424d84ea-8a6d-11e4-a2d1-22000ac5040c'
-#       }
-# )
+# {
+#     "api_id": "a0dd783d-509c-11eb-b4f1-0242ac110003",
+#     "message": "changed"
+# }
 
 # Delete an endpoint
-params = {
-        'endpoint_id' : '21784177241578' # ID of the endpoint that as to be deleted
-}
-
-response = p.delete_endpoint(params)
-print str(response)
+response = client.endpoints.delete(
+    endpoint_id="14659095951490", # ID of the endpoint that as to be deleted
+)
+print(response)
 
 # Sample successful endpoint
 # (204, '')
 
 # Sample unsuccessful output
-# (404, {
-#		u'api_id': u'b6d258ee-8f64-11e4-b153-22000abcaa64', 
-#		u'error': u'not found'
-#		}
-# )
+# {
+#       'api_id': 'b6d258ee-8f64-11e4-b153-22000abcaa64', 
+#	'error': 'not found'
+# }

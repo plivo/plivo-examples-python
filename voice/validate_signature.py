@@ -1,32 +1,34 @@
-from flask import Flask, request, make_response
-import plivo, plivoxml
-import urlparse
+from flask import Flask, request, make_response, url_for
+import plivo
+from plivo import plivoxml
 
 app = Flask(__name__)
 
-@app.route('/speak/', methods =['GET','POST'])
-def speak():
-    signature = request.headers.get('X-Plivo-Signature')
-    uri = url_for('speak', _external=True)
-    auth_token = "Your AUTH TOKEN"
-    url = request.url
-    parsed = urlparse.urlparse(url)
-    params = dict(urlparse.parse_qsl(parsed.query))
-    
-    data = dict((key, request.form.getlist(key)[0]) for key in request.form.keys())
-    params.update(data)
-    valid = plivo.validate_signature(uri,params,signature,auth_token)
-    print valid
-
-    r = plivoxml.Response()
+@app.route('/speak/', methods=['GET', 'POST'])
+def validate_signature():
+    signature = request.headers.get('X-Plivo-Signature-V3', 'signature')
+    nonce = request.headers.get('X-Plivo-Signature-V3-Nonce', '12345')
+    url = url_for('validate_signature', _external=True)
+    auth_token = "your_auth_token"
+    method = request.method
+    if method == 'GET':
+        valid = plivo.utils.validate_v3_signature(
+            method, url, nonce, auth_token, signature)
+    else:
+        params = request.get_json()
+        valid = plivo.utils.validate_v3_signature(
+            method, url, nonce, auth_token, signature, params)
+    print(valid)
+    r = plivoxml.ResponseElement()
     speak_params = {
         'loop': '3'
     }
-    r.addSpeak("Hello, from Plivo",**speak_params)
-    response = make_response(r.to_xml())
+    r.add(plivoxml.SpeakElement("Hello, from Plivo", **speak_params))
+    response = make_response(r.to_string())
     response.headers["Content-type"] = "text/xml"
-    print r.to_xml()
+    print(r.to_string())
     return response
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

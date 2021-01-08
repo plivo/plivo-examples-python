@@ -1,31 +1,30 @@
-import plivo, plivoxml
+import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
+client = plivo.RestClient("YOUR_AUTH_ID", "YOUR_AUTH_TOKEN")
 
-p = plivo.RestAPI(auth_id, auth_token)
-
-params = {
-    'call_uuid': '55309cee-821d-11e4-9a73-498d468c930b' # The ID of the call
-}
-
-response = p.get_cdr(params)
-print str(response)
+response = client.calls.get(
+    call_uuid="10f0cb68-7533-45ed-acb5-87ceac29ee48",  # The ID of the call
+)
+print(response)
 
 # Sample successful output
-# (200, {
-#	u'bill_duration': 0, 
-#	u'billed_duration': 0, 
-#	u'total_amount': u'0.00000', 
-#	u'parent_call_uuid': None, 
-#	u'call_direction': u'outbound', 
-#	u'call_duration': 0, 
-#	u'to_number': u'2222222222', 
-#	u'total_rate': u'0.00000', 
-#	u'api_id': u'fba71e98-901b-11e4-a2d1-22000ac5040c', 
-#	u'from_number': None, 
-#	u'end_time': u'2014-12-12 20:39:02+04:00', 
-#	u'call_uuid': u'55309cee-821d-11e4-9a73-498d468c930b', 
-#	u'resource_uri': u'/v1/Account/XXXXXXXXXXXX/Call/55309cee-821d-11e4-9a73-498d468c930b/'
-#	}
-# )
+# {
+#    "answer_time":"2015-07-26 15:45:02+05:30",
+#    "api_id":"06ae0f8f-dc72-11e5-b56c-22000ae90795",
+#    "bill_duration":924,
+#    "billed_duration":960,
+#    "call_direction":"outbound",
+#    "call_duration":924,
+#    "call_uuid":"10f0cb68-7533-45ed-acb5-87ceac29ee48",
+#    "end_time":"2015-07-26 15:45:14+05:30",
+#    "from_number":"+14158572518",
+#    "initiation_time":"2015-07-26 15:44:49+05:30",
+#    "parent_call_uuid":null,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Call/10f0cb68-7533-45ed-acb5-87ceac29ee48/",
+#    "to_number":"14153268174",
+#    "total_amount":"0.13600",
+#    "total_rate":"0.00850",
+#    "hangup_cause_name":"End Of XML Instructions",
+#    "hangup_cause_code":4010,
+#    "hangup_source":"Plivo"
+# }

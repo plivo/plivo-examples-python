@@ -1,85 +1,74 @@
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
-p = plivo.RestAPI(auth_id, auth_token)
-
-params = {
-	'country_iso' : "GB" # The 2 digit country ISO code.
-}
-
-response = p.pricing(params)
-print str(response)
+response = client.pricing.get(
+    country_iso="GB",  # The 2 digit country ISO code.
+)
+print(response)
 
 # Sample successful output
-# (200, {
-#	u'country': u'Angola', 
-#	u'api_id': u'f2c941e8-9507-11e4-96e3-22000abcb9af', 
-#	u'country_code': 244, 
-#	u'country_iso': u'AO', 
-#	u'message': {
-#		u'inbound': {
-#			u'rate': None
-#		}, 
-#		u'outbound': {
-#			u'rate': u'0.00880'
-#		}, 
-#		u'outbound_networks_list': [
-#			{
-#				u'rate': u'0.00880', 
-#				u'group_name': u'Angola - All'
-#			}
-#		]
-#	}, 
-#	u'voice': {
-#		u'inbound': {
-#			u'ip': {
-#				u'rate': u'0.00300'
-#			}, 
-#			u'local': {
-#				u'rate': None
-#			}, 
-#			u'tollfree': {
-#				u'rate': None
-#			}
-#		}, 
-#		u'outbound': {
-#			u'ip': {
-#				u'rate': u'0.00300'
-#			}, 
-#			u'local': {
-#				u'rate': u'0.09260'
-#			}, 
-#			u'tollfree': {
-#				u'rate': None
-#			}, 
-#			u'rates': [
-#				{
-#					u'prefix': [
-#						u'24491', 
-#						u'24492', 
-#						u'24493', 
-#						u'24494'
-#					], 
-#					u'rate': u'0.09260'
-#				}, 
-#				{
-#					u'prefix': [
-#						u'244'
-#					], 
-#					u'rate': u'0.10030'
-#				}
-#			]
-#		}
-#	}, 
-#	u'phone_numbers': {
-#		u'local': {
-#			u'rate': None
-#		}, 
-#		u'tollfree': {
-#			u'rate': None
-#		}
-#	}
+# {
+#    "api_id":"7ff5505c-93ca-11e7-9bde-024427e23b8a",
+#    "country":"United States",
+#    "country_code":1,
+#    "country_iso":"US",
+#    "message":{
+#       "inbound":{
+#          "rate":"0.00000"
+#       },
+#       "outbound":{
+#          "rate":"0.00350"
+#       },
+#       "outbound_networks_list":[
+#          {
+#             "group_name":"US",
+#             "rate":"0.00350"
+#          },
+#          {
+#             "group_name":"United States - AT&T Mobility",
+#             "rate":"0.00350"
+#          }
+#       ]
+#    },
+#    "phone_numbers":{
+#       "local":{
+#          "rate":"0.80000"
+#       },
+#       "tollfree":{
+#          "rate":"1.00000"
+#       }
+#    },
+#    "voice":{
+#       "inbound":{
+#          "ip":{
+#             "rate":"0.00300"
+#          },
+#          "local":{
+#             "rate":"0.00850"
+#          },
+#          "tollfree":{
+#             "rate":"0.02100"
+#          }
+#       },
+#       "outbound":{
+#          "ip":{
+#             "rate":"0.00300"
+#          },
+#          "local":{
+#             "rate":"0.00750"
+#          },
+#          "rates":[
+#             {
+#                "prefix":[
+#                   "1"
+#                ],
+#                "rate":"0.00750"
+#             }
+#          ],
+#          "tollfree":{
+#             "rate":null
+#          }
+#       }
+#    }
 # }
-# )

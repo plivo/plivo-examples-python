@@ -1,29 +1,27 @@
 from flask import Flask, request, Response
-import plivoxml
+from plivo import plivoxml
 
-app=Flask(__name__)
+app = Flask(__name__)
 
-@app.route('/dial/', methods=['GET','POST'])
+
+@app.route("/dial/", methods=["GET", "POST"])
 def dial_xml():
-
     # Generate Dial XML
+    response = plivoxml.ResponseElement()
+    response.add(plivoxml.SpeakElement("Connecting your call.."))
+    response.add(
+        plivoxml.DialElement(action="http://www.foo.com/dial_status", method="GET").add(
+            plivoxml.NumberElement("15671234567")
+        )
+    )
+    return Response(response.to_string(), mimetype="application/xml")
 
-    response = plivoxml.Response()
-    params = {
-        'action' : "https://morning-ocean-4669.herokuapp.com/dial_status/",
-        'method' : 'GET'
-    }
-    response.addSpeak("Connecting your call..")
-    d = response.addDial(**params)
-    d.addNumber("1111111111")
-    print response.to_xml()
-    return Response(str(response), mimetype='text/xml')
 
 # Sample Dial XML
 # <Response>
 #	<Speak>Connecting your call..</Speak>
-#	<Dial action="https://morning-ocean-4669.herokuapp.com/dial_status/" method="GET">
-#		<Number>1111111111</Number>
+#	<Dial action="https://www.foo.com/dial_status/" method="GET">
+#		<Number>15671234567</Number>
 #	</Dial>
 # </Response>
 
@@ -35,7 +33,7 @@ def dial_status():
     status = request.args.get('DialStatus')
     aleg = request.args.get('DialALegUUID')
     bleg = request.args.get('DialBLegUUID')
-    print "Status : %s, ALeg Uuid : %s, BLeg Uuid : %s" % (status,aleg,bleg)
+    print ("Status : %s, ALeg Uuid : %s, BLeg Uuid : %s" % (status,aleg,bleg))
     return "Dial status reported"
 
 if __name__ == "__main__":

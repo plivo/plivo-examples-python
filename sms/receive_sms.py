@@ -1,27 +1,27 @@
-import plivo, plivoxml
-from flask import Flask, request
-
+from flask import Flask, request, make_response, Response
 
 app = Flask(__name__)
 
-@app.route("/receive_sms/", methods=['GET','POST'])
-def receive_sms():
 
-    # Sender's phone numer
-    from_number = request.values.get('From')
-
+@app.route("/receive_sms/", methods=["GET", "POST"])
+def inbound_sms():
+    # Sender's phone number
+    from_number = request.values.get("From")
     # Receiver's phone number - Plivo number
-    to_number = request.values.get('To')
-
+    to_number = request.values.get("To")
     # The text which was received
-    text = request.values.get('Text')
-
+    text = request.values.get("Text")
     # Print the message
-    print 'Text received: %s - From: %s' % (text, from_number)
-    return "Text received"
+    print(
+        "Message received - From: %s, To: %s, Text: %s" % (from_number, to_number, text)
+    )
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    return "Message Recevived"
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)
+
 
 # Sample successful output
-# Text received: Hello, from Plivo - From: 2222222222
+# Message received - From:+14151112222 To:+14152223333 Text: Hello!

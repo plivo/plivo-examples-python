@@ -1,28 +1,22 @@
 from flask import Flask, Response
-import plivo, plivoxml
+from flask import request
+from plivo import plivoxml
 
 app = Flask(__name__)
 
-@app.route('/reject_call/', methods=['GET', 'POST'])
-def reject_call():
+@app.route('/screen_call/', methods=['GET', 'POST'])
+def screen_call():
 
-    blacklist = ['1111111111','2222222222']
+    blacklist = ['14156667777','14156667778','14156667779']
     from_number = request.values.get('From')
-    print ("From %s") % from_number
-
-    response = plivoxml.Response()
-
-    if from_number in blacklist:
-        params = {
-            'reason': 'rejected' # Specify the reason for hangup
-        }
-        response.addHangup(**params)
-        print response.to_xml()
-    else:
-        response.addSpeak('Hello from Plivo')        
-        print response.to_xml()
+    response = plivoxml.ResponseElement()
     
-    return Response(str(response), mimetype='text/xml')
+    if from_number in blacklist:
+        params = {'reason': 'rejected'}
+        response.add(plivoxml.HangupElement(**params))
+    else:
+        response.add(plivoxml.SpeakElement('Hello, how are you today'))
+    return Response(response.to_string(), mimetype='application/xml')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
@@ -35,6 +29,6 @@ Sample output when From number is in blacklist
 
 Sample Output when From number is not in blacklist
 <Response>
-    <Speak>Hello from Plivo</Speak>
+    <Speak>Hello, how are you today</Speak>
 </Response>
 '''
