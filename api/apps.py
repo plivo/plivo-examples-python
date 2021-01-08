@@ -1,164 +1,184 @@
-import plivo,plivoxml
+import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
 # Create a new application
-params = {
-    'answer_url': 'http://example.com', # The URL Plivo will fetch when a call executes this application
-    'app_name': 'Testing_App' # The name of your application
-}
-
-response = p.create_application(params)
-print str(response)
+response = client.applications.create(
+    app_name="Test Application",  # The name of your application
+    answer_url="http://answer.url",  # The URL Plivo will fetch when a call executes this application
+)
+print(response)
 
 # Sample successful output
-# (201, {
-#       u'message': u'created',
-#       u'app_id': u'21935628481970026',
-#       u'api_id': u'a50543a6-8a64-11e4-b153-22000abcaa64'
-#       }
-# )
+# {
+#   "message": "created",
+#   "app_id": "15784735442685051",
+#   "api_id": "5a9fcb68-582d-11e1-86da-6ff39efcb949"
+# }
 
 # Get details all existing applications
-params = {
-        'limit' : '10', # The number of results per page
-        'offset' : '0' # The number of value items by which the results should be offset
-}
 
-response = p.get_applications(params)
-print str(response)
+response = client.applications.list(
+    offset=0,  # The number of value items by which the results should be offset
+    limit=5,  # The number of results per page
+)
+print(response)
 
 # Sample successful output
-#(200, {
-#       u'meta': {
-#               u'previous': None,
-#               u'total_count': 7,
-#               u'offset': 0,
-#               u'limit': 10,
-#               u'next': None
-#       },
-#       u'objects': [
-#               {
-#                       u'fallback_method': u'POST',
-#                       u'default_app': False,
-#                       u'app_name': u'Testing_App',
-#                       u'sub_account': None,
-#                       u'production_app': False,
-#                       u'enabled': True,
-#                       u'app_id': u'21935628481970026',
-#                       u'public_uri': False,
-#                       u'hangup_url': u'http://example.com',
-#                       u'sip_uri': u'sip:21935628481970026@app.plivo.com',
-#                       u'default_endpoint_app': False,
-#                       u'answer_url': u'http://example.com',
-#                       u'message_url': u'',
-#                       u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/21935628481970026/',
-#                       u'hangup_method': u'POST',
-#                       u'message_method': u'POST',
-#                       u'fallback_answer_url': u'',
-#                       u'answer_method': u'POST'
-#               },
-#               {
-#                       u'fallback_method': u'POST',
-#                       u'default_app': False,
-#                       u'app_name': u'Receive SMS',
-#                       u'sub_account': None,
-#                       u'production_app': False,
-#                       u'enabled': True,
-#                       u'app_id': u'26469261154421101',
-#                       u'public_uri': False,
-#                       u'hangup_url': u'http://morning-ocean-4669.herokuapp.com/response/conference/',
-#                       u'sip_uri': u'sip:26469261154421101@app.plivo.com',
-#                       u'default_endpoint_app': False,
-#                       u'answer_url': u'http://morning-ocean-4669.herokuapp.com/response/conference/',
-#                       u'message_url': u'http://morning-ocean-4669.herokuapp.com/message/',
-#                       u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/26469261154421101/',
-#                       u'hangup_method': u'POST',
-#                       u'message_method': u'GET',
-#                       u'fallback_answer_url': u'',
-#                       u'answer_method': u'GET'
-#               }
-#       ]
-# )
+# {
+#    {
+#       "limit":5,
+#       "next":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/?limit=5&offset=5",
+#       "offset":0,
+#       "previous":"None",
+#       "total_count":4
+#    }
+#    "objects": [{
+#    "answer_method":"GET",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"77506472664956327",
+#    "app_name":"Direct Dial",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":true,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"http://plivodirectdial.herokuapp.com/",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/77506472664956327/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"11624750585743683",
+#    "app_name":"app name",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"None",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"None",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/11624750585743683/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"17371468466407823",
+#    "app_name":"Trainig",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/17371468466407823/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"28596691685931059",
+#    "app_name":"AppTest-1558568",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/28596691685931059/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# }]
+# }
 
 # Print the total number of apps
-print response[1]['meta']['total_count']
+print(response['meta']['total_count'])
 
 # Sample successful output
-# 6
-
-# Print public_uri, default_app, default_endpoint
-for i in range(0,response[1]['meta']['total_count']):
-    print "public_uri : %s" % (response[1]['objects'][i]['public_uri'])
-    print "default_app : %s" % (response[1]['objects'][i]['default_app'])
-    print "default_endpoint_app : %s" % (response[1]['objects'][i]['default_endpoint_app'])
+# 4
 
 # Get details of a single application
-params = {
-        'app_id': '16631550192125875' # ID of the application for which the details have to be retrieved
-}
-
-response = p.get_application(params)
-print str(response)
+response = client.applications.get(
+    app_id="24075895272788587",  # ID of the application for which the details have to be retrieved
+)
+print(response)
 
 # Sample successful output
-#(200,
-#       {
-#               u'fallback_method': u'GET',
-#               u'default_app': True,
-#               u'app_name': u'Phone TTS',
-#               u'sub_account': None,
-#               u'production_app': False,
-#               u'enabled': True,
-#               u'app_id': u'16631550192125875',
-#               u'api_id': u'e90bca98-8a69-11e4-ac1f-22000ac51de6',
-#               u'hangup_url': u'http://mysterious-reaches-5041.herokuapp.com/response/speak/',
-#               u'sip_uri': u'sip:16631550192125875@app.plivo.com',
-#               u'default_endpoint_app': False,
-#               u'answer_url': u'https://morning-ocean-4669.herokuapp.com/speech/',
-#               u'public_uri': False,
-#               u'message_url': u'https://morning-ocean-4669.herokuapp.com/response/conference/',
-#               u'resource_uri': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/16631550192125875/',
-#               u'hangup_method': u'POST',
-#               u'message_method': u'POST',
-#               u'fallback_answer_url': u'',
-#               u'answer_method': u'GET'
-#       }
-#)
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"28596691685931059",
+#    "api_id": "874df593-5049-11eb-8445-0242ac110003",
+#    "app_name":"AppTest-1558568",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/28596691685931059/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# }
 
 # Modify an application
-
-params = {
-        'app_id' : '16631550192125875', # ID of the application that has to be modified
-        'answer_url': 'http://exampletest.com' # Values that have to be updated
-}
-
-response = p.modify_application(params)
-print str(response)
+response = client.applications.update(
+    app_id="21686794894743506",  # ID of the application that has to be modified
+    answer_url="http://updated.answer.url",  # Values that have to be updated
+)
+print(response)
 
 # Sample successful output
-# (202, {
-#       u'message': u'changed',
-#       u'api_id': u'6d886ed4-8a6a-11e4-ac1f-22000ac51de6'
-#       }
-# )
+# {
+#    "message":"changed",
+#    "api_id":"5a9fcb68-582d-11e1-86da-6ff39efcb949"
+# }
 
 # Delete an application
-params = {
-        'app_id' : '16631550192125875' # ID of the application that as to be deleted
-}
-response = p.delete_application(params)
-print str(response)
+response = client.applications.delete(
+    app_id = "21686794894743506", #ID of the application that as to be deleted
+)
+print(response)
 
 # Sample successful output
 # (204, '')
 
 # Sample unsuccessful output
-# (404, {
-#       u'api_id': u'5fbdd916-8f64-11e4-b153-22000abcaa64', 
-#       u'error': u'not found'
-#       }
-# )
+# {
+#    'api_id': u'5fbdd916-8f64-11e4-b153-22000abcaa64', 
+#    'error': u'not found'
+# }

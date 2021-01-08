@@ -1,37 +1,28 @@
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
 # Link an application to a number
-params = {
-        'number' : '12143010249', # Number that has to be linked to an application
-        'app_id' : '16638156474000802' # Application ID that has to be linked
-}
-
-response = p.link_application_number(params)
-print str(response)
+response = client.numbers.update(
+    number="12143010249",
+    app_id="16638156474000802", )
+print(response)
 
 # Sample successful output
-# (202, {
-#       u'message': u'changed',
-#       u'api_id': u'4b342d2e-8a91-11e4-96e3-22000abcb9af'
-#       }
-# )
+# {
+#   "message": "changed",
+#   "api_id": "5a9fcb68-582d-11e1-86da-6ff39efcb949"
+# }
 
 # Unlink an application from an number
-params = {
-        'number' : '12143010249' # Number that has to be unlikned to an application
-}
-
-response = p.unlink_application_number(params)
-print str(response)
+response = client.numbers.update(
+    number="12143010249", # Number that has to be unlikned to an application
+    app_id=""  # No app_id value to be passed.
+)
+print(response)
 
 # Sample successful output
-# (202, {
-#       u'message': u'changed',
-#       u'api_id': u'6b70316e-8a91-11e4-a2d1-22000ac5040c'
-#       }
-# )
+# {
+#   "message": "changed",
+#   "api_id": "5a9fcb68-582d-11e1-86da-6ff39efcb949"
+# }

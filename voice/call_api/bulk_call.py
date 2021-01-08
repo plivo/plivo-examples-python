@@ -1,29 +1,20 @@
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
-
-params = {
-    'to': '2222222222<3333333333', # The phone numers to which the all has to be placed. The numbers are separated by "<" delimiter.
-    'from' : '1111111111', # The phone number to be used as the caller id
-    'answer_url' : "http://morning-ocean-4669.herokuapp.com/speech/", # The URL invoked by Plivo when the outbound call is answered
-    'answer_method' : "GET", # The method used to call the answer_url
-}
-
-# Make an outbound call
-response = p.make_call(params)
-
-print str(response)
+client = plivo.RestClient("YOUR_AUTH_ID", "YOUR_AUTH_TOKEN")
+response = client.calls.create(
+    from_="14152224444", # The phone number to be used as the caller id
+    to_="+14152223333<+14151112222", # The phone numers to which the all has to be placed. The numbers are separated by "<" delimiter.
+    answer_url="http://s3.amazonaws.com/static.plivo.com/answer.xml", # The URL invoked by Plivo when the outbound call is answered
+    answer_method="GET", # The method used to call the answer_url
+)
+print(response)
 
 # Sample successful output
-# (202, {
-#       u'message': u'call fired',
-#       u'request_uuid': [
-#               u'd7fa180c-9501-11e4-a4d0-3f7813869e0a',
-#               u'd7fa180c-9501-11e4-a4d0-3f7813869e1a'
-#       ],
-#       u'api_id': u'be50302a-9502-11e4-a0ec-fd067af138be'
-#       }
-# )
+# {
+#    "api_id":"a3fd14a6-50b7-11eb-b4f1-0242ac110003",
+#    "message":"calls fired",
+#    "request_uuid":[
+#       "7f22731b-ccb3-40fb-b547-96938cb81162",
+#       "8fe356e1-a9d0-4934-a0bd-34dd37d0dde2"
+#    ]
+# }

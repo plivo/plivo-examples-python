@@ -1,102 +1,98 @@
-import plivo,plivoxml
-from flask import Flask, Response, request
+from plivo import plivoxml
+from flask import Flask, Response, request, make_response
 import traceback
+import plivo
 
 app = Flask(__name__)
 
-# A call is made to the plivo number. 
+# A call is made to the plivo number.
 # The answer_url returns and XML that starts recording the session and then dials to another number.
 # When the user pick up, the B Leg record starts and a music is played.
 
 # The action URL of the Record tag will return the Session recording details
 
-@app.route('/answer_incoming/', methods=['GET','POST'])
+
+@app.route("/answer_incoming/", methods=["GET", "POST"])
 def answer_incoming():
-    r = plivoxml.Response()
-    record_params = {
-        'action' : "https://morning-ocean-4669.herokuapp.com/record_action/",
-        'method' : "GET",
-        'redirect' : "false",
-        'recordSession' : "true"
-    }
-    r.addRecord(**record_params)
-    wait_params = {
-        'length' : "5"
-    }
-    r.addWait(**wait_params)
-    r.addSpeak("Connecting your call!")
-    dial_params = {
-        'callbackUrl' : "https://morning-ocean-4669.herokuapp.com/dial_outbound/",
-        'callbackMethod' : "GET"
-    }
-    d = r.addDial(**dial_params)
-    d.addNumber("1111111111")
-    print r.to_xml()
-    return Response(str(r), mimetype='text/xml')
+    response = plivoxml.ResponseElement()
+    response.add(
+        plivoxml.RecordElement(
+            action="http://foo.com/record_action/",
+            method="GET",
+            record_session=True,
+            callback_url="http://foo.com/record_action/",
+            callback_method="GET",
+            redirect=False,
+        )
+    )
+    response.add(plivoxml.WaitElement(length="5"))
+    response.add(plivoxml.SpeakElement("Connecting your call"))
+    response.add(plivoxml.DialElement().add(plivoxml.NumberElement("15551234567")))
+    return Response(response.to_string(), mimetype="application/xml")
+
 
 # The Callback URL of Dial will make a request to the Record API which will record only the B Leg
 # Play API is invoked which will play a music only on the B Leg.
 
-@app.route('/dial_outbound/', methods=['GET','POST'])
+
+@app.route("/dial_outbound/", methods=["GET", "POST"])
 def dial_outbound():
     try:
-        event = request.args.get('Event')
-        call_uuid = request.args.get('DialBLegUUID')
+        event = request.args.get("Event")
+        call_uuid = request.args.get("DialBLegUUID")
         if event == "DialAnswer":
-            auth_id = "Your AUTH_ID"
-            auth_token = "Your AUTH_TOKEN"
-            p = plivo.RestAPI(auth_id, auth_token)
-            record_params = {
-                'call_uuid' : call_uuid,
-                'callback_url' : "https://morning-ocean-4669.herokuapp.com/recording_callback/",
-                'callback_method' : "GET"
-            }
-            response = p.record(record_params)
-            print str(response)
-            play_params = {
-                'call_uuid' : call_uuid,
-                'urls' : "https://s3.amazonaws.com/plivocloud/Trumpet.mp3"
-            }
-            response = p.play(play_params)
-            print str(response)
-            return Response(response, mimetype='text/plain')
+            auth_id = "YOUR_AUTH_ID"
+            auth_token = "YOUR_AUTH_TOKEN"
+            client = plivo.RestClient(auth_id, auth_token)
+            response = client.calls.record(
+                call_uuid=call_uuid,
+                callback_url="https://www.foo.com/recording_callback/",
+                callback_mathod="GET",
+            )
+
+            # Play audio over the call
+
+            response = client.calls.play(
+                call_uuid=call_uuid,
+                urls="https://s3.amazonaws.com/plivocloud/music.mp3",
+            )
+            return Response(response, mimetype="text/plain")
         else:
-            print "Invalid"
-            return Response("INVALID", mimetype='text/plain')
+            print("Invalid")
+            return Response("INVALID", mimetype="text/plain")
     except Exception as e:
-        print '\n'.join(traceback.format_exc().splitlines())
+        print("\n".join(traceback.format_exc().splitlines()))
+
 
 # The Callback URL of record api will return the B Leg record details.
 
-@app.route('/recording_callback/', methods=['GET','POST'])
-def recording_callback():
-    if request.method == 'GET':
-        record_url = request.args.get('record_url')
-        record_duration = request.args.get('recording_duration')
-        record_id = request.args.get('recording_id')
-    elif request.method == 'POST':
-        record_url = request.form.get('record_url')
-        record_duration = request.form.get('recording_duration')
-        record_id = request.form.get('recording_id')
-    response = make_response('OK')
-    response.headers['Content-type'] = 'text/plain'
-    print "Record URL : %s " % (record_url)
-    print "Recording Duration : %s " % (record_duration)
-    print "Recording ID : %s " % (record_id)
-    return response    
 
-if __name__=='__main__':
-    app.run(host='0.0.0.0',debug='True')  
+@app.route("/recording_callback/", methods=["GET", "POST"])
+def recording_callback():
+    record_url = request.args.get("record_url")
+    record_duration = request.args.get("recording_duration")
+    record_id = request.args.get("recording_id")
+
+    response = make_response("OK")
+    response.headers["Content-type"] = "text/plain"
+    print("Record URL : %s " % (record_url))
+    print("Recording Duration : %s " % (record_duration))
+    print("Recording ID : %s " % (record_id))
+    return response
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug="True")
+ 
 
 # Sample Output
 # <Response>
-#    <Record action="https://morning-ocean-4669.herokuapp.com/record_action/" callbackMethod="GET" callbackUrl="https://morning-ocean-4669.herokuapp.com/record_action/" 
-#        method="GET" recordSession="true" redirect="false" />
-#    <Wait length="5" />
-#    <Speak>Connecting your call!</Speak>
-#    <Dial callbackMethod="GET" callbackUrl="https://morning-ocean-4669.herokuapp.com/dial_outbound/">
-#        <Number>1111111111</Number>
-#    </Dial>
+#   <Record action="http://foo.com/record_action/" method="GET" redirect="false" recordSession="true" callbackUrl="http://foo.com/record_action/" callbackMethod="GET"/>
+#   <Wait length="5"/>
+#   <Speak>Connecting your call</Speak>
+#   <Dial>
+#     <Number>15551234567</Number>
+#   </Dial>
 # </Response>
 
 # Output from the Record XML action URL
@@ -105,18 +101,16 @@ if __name__=='__main__':
 # Recording ID : daddbf04-9585-11e4-a4c8-782bcb5bb8af 
 
 # Output of the Record API request
-# (200, {
-#        u'message': u'async api spawned', 
-#        u'api_id': u'e3403906-9585-11e4-b153-22000abcaa64'
-#    }
-# )
+#{
+#     'message': 'async api spawned', 
+#     'api_id': 'e3403906-9585-11e4-b153-22000abcaa64'
+# }
 
 # Output of the Play XML request
-# (202, {
-#        u'message': u'play started', 
-#        u'api_id': u'e3791dca-9585-11e4-96e3-22000abcb9af'
-#    }
-# )
+# {
+#   "message": "play started",
+#   "api_id": "07abfd94-58c0-11e1-86da-adf28403fe48"
+# }
 
 # Output of Record API Callback URL
 # Record URL : http://s3.amazonaws.com/recordings_2013/11112222-4444-11e4-a4c8-782bcb5bb8af.mp3

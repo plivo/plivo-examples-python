@@ -1,77 +1,113 @@
-import plivo,plivoxml
+import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your AUTH_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
+client = plivo.RestClient("YOUR_AUTH_ID","YOUR_AUTH_TOKEN")
 
 # This example shows how to traverse the list of all applications. 
 
 # Get details all existing applications
-params = {
-	'limit' : '2', # The number of results per page
-	'offset' : '0' # The number of value items by which the results should be offset
-}
+response = client.applications.list(
+    offset=0, # The number of results per page
+    limit=5, # The number of value items by which the results should be offset
+)
+print(response)
 
-response = p.get_applications(params)
-print response[1]
-
-# Sample successful response
+# Sample successful output
 # {
-#	u'meta': {
-#		u'previous': None, 
-#		u'total_count': 12, 
-#		u'offset': 0, 
-#		u'limit': 2, 
-#		u'next': u'/v1/Account/xxxxxxxxxxxxxxxxx/Application/?limit=2&offset=2'
-#	}, 	
-#	u'objects': [
-#		{
-#			u'fallback_method': u'POST', 
-#			u'default_app': False, 
-#			u'app_name': u'Testing_App10', 
-#			u'sub_account': None, 
-#			u'production_app': False, 
-#			u'enabled': True, 
-#			u'app_id': u'14344967555248312', 
-#			u'public_uri': False, 
-#			u'hangup_url': u'http://example.com', 
-#			u'sip_uri': u'sip:14344967555248312@app.plivo.com', 
-#			u'default_endpoint_app': False, 
-#			u'answer_url': u'http://example.com', 
-#			u'message_url': u'', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXX/Application/14344967555248312/', 
-#			u'hangup_method': u'POST', 
-#			u'message_method': u'POST', 
-#			u'fallback_answer_url': u'', 
-#			u'answer_method': u'POST'
-#		}, 
-#		{
-#			u'fallback_method': u'POST', 
-#			u'default_app': False, 
-#			u'app_name': u'Testing_App7', 
-#			u'sub_account': None, 
-#			u'production_app': False, 
-#			u'enabled': True, 
-#			u'app_id': u'12933174623656681', 
-#			u'public_uri': False, 
-#			u'hangup_url': u'http://example.com', 
-#			u'sip_uri': u'sip:12933174623656681@app.plivo.com', 
-#			u'default_endpoint_app': False, 
-#			u'answer_url': u'http://example.com', 
-#			u'message_url': u'', 
-#			u'resource_uri': u'/v1/Account/XXXXXXXXXXXX/Application/12933174623656681/', 
-#			u'hangup_method': u'POST', 
-#			u'message_method': u'POST', 
-#			u'fallback_answer_url': u'', 
-#			u'answer_method': u'POST'
-#		}
-#	], 
-#	u'api_id': u'92150f80-8f58-11e4-96e3-22000abcb9af'
+#    {
+#       "limit":5,
+#       "next":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/?limit=5&offset=5",
+#       "offset":0,
+#       "previous":"None",
+#       "total_count":4
+#    }
+#    "objects": [{
+#    "answer_method":"GET",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"77506472664956327",
+#    "app_name":"Direct Dial",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":true,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"http://plivodirectdial.herokuapp.com/",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/77506472664956327/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"11624750585743683",
+#    "app_name":"app name",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"None",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"None",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/11624750585743683/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"17371468466407823",
+#    "app_name":"Trainig",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/17371468466407823/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# },
+# {
+#    "answer_method":"POST",
+#    "answer_url":"http://plivodirectdial.herokuapp.com/",
+#    "app_id":"28596691685931059",
+#    "app_name":"AppTest-1558568",
+#    "application_type":"XML",
+#    "default_app":false,
+#    "default_endpoint_app":false,
+#    "enabled":true,
+#    "fallback_answer_url":"",
+#    "fallback_method":"POST",
+#    "hangup_method":"POST",
+#    "hangup_url":"http://plivodirectdial.herokuapp.com/",
+#    "log_incoming_message":true,
+#    "message_method":"POST",
+#    "message_url":"",
+#    "public_uri":false,
+#    "resource_uri":"/v1/Account/MAXXXXXXXXXXXXXXXXXX/Application/28596691685931059/",
+#    "sip_uri":"sip:20372631212782780@app.plivo.com",
+#    "sub_account":"None"
+# }]
 # }
 
 # Print the link to view the next page of results
-print response[1]['meta']['next']
+print (response['meta']['next'])
 
 # Sample successful output
 # /v1/Account/XXXXXXXXXXXX/Application/?limit=2&offset=2

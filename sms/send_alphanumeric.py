@@ -1,41 +1,21 @@
 import plivo
 
-auth_id = "Your AUTH_ID"
-auth_token = "Your Auth_TOKEN"
-
-p = plivo.RestAPI(auth_id, auth_token)
-
-params = {
-    'src': 'TEST', # Alphanumeric sender ID
-    'dst' : '1111111111', # Receiver's phone number with ountry code
-    'text' : "Hi, from Plivo" # Your SMS text message
-}
-
-response = p.send_message(params)
-
+client = plivo.RestClient("auth_id", "auth_token")
+response = client.messages.create(
+    src="TEST",  # Alphanumeric sender ID
+    dst=" 14152223333",  # Sender's phone number with country code
+    text="Hello, this is a sample text",  # Your SMS Text Message - English
+    url="http://foo.com/sms_status/",  # URL for callback
+    method="GET",  # The method used to call the url
+)
 # Prints the complete response
-print str(response)
-
-# Sample successful output
-# (202, {
-#               u'message': u'message(s) queued',
-#               u'message_uuid': [u'53e6526a-8a7a-11e4-a77d-22000ae383ea'],
-#               u'api_id': u'53cc4532-8a7a-11e4-96e3-22000abcb9af'
-#       }
-# )
-
-# Prints only the status code
-print response[0]
-
-# Sample successful output
-# 202
-
-# Prints the message details
-print response[1]
+print(response)
 
 # Sample successful output
 # {
-#       u'message': u'message(s) queued',
-#       u'message_uuid': [u'53e6526a-8a7a-11e4-a77d-22000ae383ea'],
-#       u'api_id': u'53cc4532-8a7a-11e4-96e3-22000abcb9af'
+#    "message":"message(s) queued",
+#    "message_uuid":[
+#       "db3ce55a-7f1d-11e1-8ea7-1231380bc196"
+#    ],
+#    "api_id":"db342550-7f1d-11e1-8ea7-1231380bc196"
 # }
